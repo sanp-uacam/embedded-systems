@@ -1,5 +1,7 @@
 
-def set_servo_angle(angle):
+import time
+
+def set_servo_angle(angle, pwm):
     duty = 2.5 + (angle + 90) / 180 * 10
     pwm.ChangeDutyCycle(duty)   
     time.sleep(0.5) 

@@ -19,10 +19,10 @@ try:
     print("Iniciando secuencia del servomotor. Presiona CTRL+C para detener.")
     while True:
         print("Moviendo a 90 grados...")
-        set_servo_angle(90)
+        set_servo_angle(90, pwm)
         time.sleep(3)
         print("Moviendo a -90 grados...")
-        set_servo_angle(-90)
+        set_servo_angle(-90, pwm)
         time.sleep(3)
 
 except KeyboardInterrupt:
