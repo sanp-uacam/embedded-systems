@@ -14,7 +14,7 @@ def leer_api_simple(url):
         return None
 
 # Uso
-url = "http://localhost:8000/api/sensor"
+url = "http://192.168.1.132:5000/api/sensor"
 datos = leer_api_simple(url)
 
 if datos:
