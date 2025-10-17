@@ -7,12 +7,12 @@ import time
 from servo_control import set_servo_angle
 
 SERVO_PIN = 18
-pwm = GPIO.PWM(SERVO_PIN, 50)
+pwm = None
 
 def setup():
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(SERVO_PIN, GPIO.OUT)
-
+    pwm = GPIO.PWM(SERVO_PIN, 50)
     pwm.start(0) 
 
 def loop():
