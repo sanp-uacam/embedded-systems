@@ -10,6 +10,8 @@ SERVO_PIN = 18
 pwm = None
 
 def setup():
+    global pwm
+    
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(SERVO_PIN, GPIO.OUT)
     pwm = GPIO.PWM(SERVO_PIN, 50)
@@ -23,7 +25,15 @@ def loop():
     set_servo_angle(-90, pwm)
     time.sleep(3)
     
+def cleanup():
+    global pwm
+    
+    if pwm:
+        pwm.stop()
+    GPIO.cleanup()
+    
 if __name__ == "__main__": 
+    
     setup()
     
     try:
@@ -33,7 +43,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Programa detenido por el usuario.")
 
-    finally:
-        pwm.stop()          
-        GPIO.cleanup()      
-        print("GPIO limpiado y programa finalizado.")
+    finally:         
+        cleanup()      
