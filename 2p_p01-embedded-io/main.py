@@ -14,7 +14,7 @@ pwm = None
 
 def read_dht11():
     """Lee los datos del sensor DHT11"""
-    humidity, temperature = Adafruit_DHT.read_retry(DHT_SENSOR, DHT11_PIN)
+    humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT11_PIN)
     
     if humidity is not None and temperature is not None:
         print(f"Temp: {temperature:.1f}°C  Humedad: {humidity:.1f}%")
