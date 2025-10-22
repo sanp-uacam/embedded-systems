@@ -19,7 +19,7 @@ def setup():
     global min_value, max_value 
     min_value, max_value = pot_lib.calibrate(POT_PIN)
     
-    app.run(host='0.0.0.0', port=8080, debug=True)
+    
     
 def loop():
     global min_value, max_value, pot_json
@@ -32,6 +32,7 @@ def loop():
 
 if __name__ == "__main__":
     setup()
+    app.run(host='0.0.0.0', port=8080, debug=True)
     
     # try:
     #     while True:
