@@ -33,16 +33,23 @@ def loop():
 if __name__ == "__main__":
     setup()
     
-    try:
-        while True:
-            loop()
+    # try:
+    #     while True:
+    #         loop()
             
-    except KeyboardInterrupt:
-        print("Programa detenido por el usuario.")
+    # except KeyboardInterrupt:
+    #     print("Programa detenido por el usuario.")
 
 @app.route('/')
 def home():
-    return jsonify({"mensaje": "API del Sensor", "endpoints": ["/api/sensor", "/api/estado"]})
+    value,normalized, resistance_approx = pot_lib.get_pot_data(min_value, max_value,POT_PIN)
+    pot_json = {
+        "value": value,
+        "normalized": normalized,
+        "resistance_approx": resistance_approx,
+    }
+    return jsonify(pot_json)
+    # return jsonify({"mensaje": "API del Sensor", "endpoints": ["/api/sensor", "/api/estado"]})
 
 def read_potentiometer():
     # Medir tiempo de carga del capacitor
