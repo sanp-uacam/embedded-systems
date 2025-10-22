@@ -6,11 +6,10 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Datos de ejemplo (pueden venir de tu sensor)
-datos_sensor = {
-    "temperatura": 25.5,
-    "humedad": 60,
-    "estado": "activo",
-    "ultima_actualizacion": datetime.now().isoformat()
+datos_potenciometro = {
+    "Valor crudo": 1000,
+    "porcentaje (%)": 20,
+    "resistance_approx": "10KΩ",
 }
 
 @app.route('/')
@@ -20,8 +19,8 @@ def home():
 @app.route('/api/sensor')
 def get_sensor_data():
     # Actualizar timestamp
-    datos_sensor["ultima_actualizacion"] = datetime.now().isoformat()
-    return jsonify(datos_sensor)
+    datos_potenciometro["ultima_actualizacion"] = datetime.now().isoformat()
+    return jsonify(datos_potenciometro)
 
 @app.route('/api/estado')
 def get_status():

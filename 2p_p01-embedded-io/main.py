@@ -1,0 +1,80 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from flask import Flask, jsonify
+import RPi.GPIO as GPIO
+import time
+
+import analog_in_potentiometer as pot_lib
+
+app = Flask(__name__)
+
+POT_PIN = 4
+GPIO.setmode(GPIO.BCM)
+min_value, max_value = None
+pot_json = {}
+
+def setup():
+    global min_value, max_value 
+    min_value, max_value = pot_lib.calibrate()
+    
+    app.run(host='0.0.0.0', port=8080, debug=True)
+    
+def loop():
+    global min_value, max_value, pot_json
+    value = read_potentiometer()
+        
+    # Normalizar el valor para potenciómetro de 5K
+    if max_value - min_value > 0:
+        normalized = (value - min_value) / (max_value - min_value) * 100.0
+        normalized = max(0, min(100, normalized))  # Limitar entre 0-100%
+    else:
+        normalized = 50  # Valor por defecto
+        
+    # También calcular resistencia aproximada
+    resistance_approx = (value / max_value) * 5000  # Aproximación para 5K
+    
+    pot_json = {
+        "Valor": value,
+        "%": normalized
+    }
+    
+    print(f"Valor crudo: {value:4d} -> {normalized:5.1f}% -> ~{resistance_approx:4.0f}Ω")
+    time.sleep(0.3)
+
+if __name__ == "__main__":
+    setup()
+    
+    try:
+        while True:
+            loop()
+            
+    except KeyboardInterrupt:
+        print("Programa detenido por el usuario.")
+
+@app.route('/')
+def home():
+    global pot_json
+    return jsonify(pot_json)
+
+def read_potentiometer():
+    # Medir tiempo de carga del capacitor
+    count = 0
+    
+    # Descargar capacitor
+    GPIO.setup(POT_PIN, GPIO.OUT)
+    GPIO.output(POT_PIN, False)
+    time.sleep(0.05)  # Reducido para potenciómetro de 5K
+    
+    # Cambiar a entrada y medir tiempo hasta que se cargue
+    GPIO.setup(POT_PIN, GPIO.IN)
+    
+    # Contar hasta que el pin sea HIGH
+    while GPIO.input(POT_PIN) == GPIO.LOW:
+        count += 1
+        if count > 50000:  # Timeout reducido para 5K
+            break
+    
+    return count
+
