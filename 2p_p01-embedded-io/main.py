@@ -17,31 +17,18 @@ pot_json = {}
 
 def setup():
     global min_value, max_value 
-    min_value, max_value = pot_lib.calibrate()
+    min_value, max_value = pot_lib.calibrate(POT_PIN)
     
     app.run(host='0.0.0.0', port=8080, debug=True)
     
 def loop():
     global min_value, max_value, pot_json
-    value = read_potentiometer()
-        
-    # Normalizar el valor para potenciómetro de 5K
-    if max_value - min_value > 0:
-        normalized = (value - min_value) / (max_value - min_value) * 100.0
-        normalized = max(0, min(100, normalized))  # Limitar entre 0-100%
-    else:
-        normalized = 50  # Valor por defecto
-        
-    # También calcular resistencia aproximada
-    resistance_approx = (value / max_value) * 5000  # Aproximación para 5K
-    
+    value,normalized, resistance_approx = pot_lib.get_pot_data(min_value, max_value,POT_PIN)
     pot_json = {
-        "Valor": value,
-        "%": normalized
+        "value": value,
+        "normalized": normalized,
+        "resistance_approx": resistance_approx,
     }
-    
-    print(f"Valor crudo: {value:4d} -> {normalized:5.1f}% -> ~{resistance_approx:4.0f}Ω")
-    time.sleep(0.3)
 
 if __name__ == "__main__":
     setup()
