@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 POT_PIN = 4
 GPIO.setmode(GPIO.BCM)
-min_value, max_value = None
+min_value, max_value = 0,0
 pot_json = {}
 
 def setup():
@@ -42,8 +42,7 @@ if __name__ == "__main__":
 
 @app.route('/')
 def home():
-    global pot_json
-    return jsonify(pot_json)
+    return jsonify({"mensaje": "API del Sensor", "endpoints": ["/api/sensor", "/api/estado"]})
 
 def read_potentiometer():
     # Medir tiempo de carga del capacitor
