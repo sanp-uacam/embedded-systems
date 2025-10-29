@@ -4,6 +4,12 @@ from flask import Flask, jsonify
 from datetime import datetime
 import threading
 
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+import analog_in_potentiometer as pot_lib
+
+
 # Configuración
 POT_PIN = 4
 GPIO.setmode(GPIO.BCM)
@@ -16,6 +22,7 @@ datos_sensor = {
     "resistencia aproximada": "0Ω",
     "ultima_actualizacion": None
 }
+
 datos_sensor_lock = threading.Lock()
 min_value = 0
 max_value = 100
@@ -35,42 +42,12 @@ def get_status():
     return jsonify({"estado": "sistema funcionando", "timestamp": datetime.now().isoformat()})
 
 # Funciones del sensor
-def read_potentiometer():
-    count = 0
-    GPIO.setup(POT_PIN, GPIO.OUT)
-    GPIO.output(POT_PIN, False)
-    time.sleep(0.1)
-    
-    GPIO.setup(POT_PIN, GPIO.IN)
-    
-    while GPIO.input(POT_PIN) == GPIO.LOW:
-        count += 1
-        if count > 100000: # Timeout para potenciómetro de 10k
-            break
-    return count
 
-# Calibración del potenciómetro
-def calibrate():
-    print("Calibrando para potenciómetro 10K...")
-    print("Gira completamente a la izquierda (mínimo)")
-    time.sleep(3)
-    min_val = read_potentiometer()
-    
-    print("Gira completamente a la derecha (máximo)")
-    time.sleep(3)
-    max_val = read_potentiometer()
-
-    if max_val <= min_val:
-        print("¡Advertencia! Mínimo y máximo son iguales. Ajustando...")
-        max_val = min_val + 100  # Evitar división por cero
-    
-    print(f"Calibración: Mínimo={min_val}, Máximo={max_val}")
-    return min_val, max_val
 
 def setup():
     global min_value, max_value
     
-    min_value, max_value = calibrate()
+    min_value, max_value = pot_lib.calibrate(POT_PIN)
     
     print("Iniciando hilo de actualización del sensor...")
     sensor_thread = threading.Thread(target=loop, daemon=True)
@@ -82,7 +59,7 @@ def setup():
 def loop():
     while True:
         try:
-            value = read_potentiometer()
+            value = pot_lib.read_potentiometer()
                 
             normalized = 0.0
             if (max_value - min_value) > 0:
