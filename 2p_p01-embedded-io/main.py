@@ -4,7 +4,8 @@ from flask import Flask, jsonify
 from datetime import datetime
 import threading
 
-import os
+import sys
+import os 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import analog_in_potentiometer as pot_lib
