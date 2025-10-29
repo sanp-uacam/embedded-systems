@@ -60,7 +60,7 @@ def setup():
 def loop():
     while True:
         try:
-            value = pot_lib.read_potentiometer()
+            value = pot_lib.read_potentiometer(POT_PIN)
                 
             normalized = 0.0
             if (max_value - min_value) > 0:
